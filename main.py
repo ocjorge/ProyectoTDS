@@ -32,13 +32,13 @@ def accion_insertar():
     return sql_db.insertar(docs)
 
 def main(page: ft.Page):
-    page.title = "Sistema de control pasajeros 'Tintanic'"
+    page.title = "Sistema de control pasajeros 'Titanic'"
     page.window.resizable = True
     page.window.maximizable = True
     page.window.width = 1300
     page.window.height = 760
     page.padding = 15
-    page.Theme = ft.Theme(color_scheme_seed=ft.Colors.BLUE_400, use_material3=True)
+    page.theme = ft.Theme(color_scheme_seed=ft.Colors.BLUE_400, use_material3=True)
 
 
     titulo = ft.Text("Selecciona una opción del menú", size = 22, weight = ft.FontWeight.BOLD, color = ft.Colors.BLUE_900)
