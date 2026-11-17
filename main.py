@@ -107,3 +107,31 @@ def main(page: ft.Page):
         mensaje.value = ("Sistema de control de pasajeros 'Titanic'\n\n"
                          "Jorge Ortiz\nOmar Martinez\nRamon Castillo")
         page.update()
+
+    #barra de menu
+    def item(texto, on_click):
+        return ft.MenuItemButton(content=ft.Text(texto), on_click=on_click)
+
+    barra = ft.MenuBar(controls=[
+        ft.SubmenuButton(content=ft.Text("Base de datos"), controls=[
+            item("Cargar CSV", accion_bd("Cargar CSV", lambda: accion_cargar_csv(ruta_csv.value))),
+            item("Transferir a Mongo", accion_bd("Transferir a Mongo", accion_transferir_mongo)),
+            item("Crear base de datos MySQL", accion_bd("Crear base de datos MySQL", sql_db.crear_bd)),
+            item("Crear tabla MySQL", accion_bd("Crear tabla MySQL", sql_db.crear_tabla)),
+            item("Insertar datos", accion_bd("Insertar datos", accion_insertar)),
+        ]),
+        ft.SubmenuButton(content=ft.Text("Estadisticos"), controls=[
+            *items_est,
+            item("Desmarcar todo", desmarcar_todo),
+        ]),
+        ft.SubmenuButton(content=ft.Text("Sobre"), controls=[
+            item("Acerca de", mostrar_sobre),
+        ]),
+    ])
+    contenido = ft.Column([ruta_csv, titulo, mensaje, imagen],
+                          expand=True, scroll=ft.ScrollMode.AUTO, spacing=12)
+
+    page.add(ft.Row([barra]), ft.Divider(height=1), contenido)
+
+if __name__ == "__main__":
+    ft.app(target=main)
