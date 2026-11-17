@@ -57,20 +57,23 @@ def main(page: ft.Page):
             page.update()
         return handler()
 
-    #--- casillas estadisticas
-    def redibujar(e = None):
-        elegidos = [(nombre, f) for (nombre, f), cb in zip(estadisticos.ESTADISTICOS, casillas) if cb.value]
-        titulo.value = "Estadísticas seleccionadas: " + ", ".join(nombre for nombre, f in elegidos)
+    #.. Estadisticos.
+    marcados = [False] * len(estadisticos.ESTADISTICOS)
+    items_est = []
+
+    def redibujar():
+        elegidos = [(n, f) for (n, f), m in zip(estadisticos.ESTADISTICOS.items(), marcados) if m]
+        titulo.value = "Estadisticos"
         if not elegidos:
             imagen.visible = False
-            mensaje.value = "marca una o mas casillas para ver estadisticas"
+            mensaje.value = "Marca uno o mas estadisticos en el menu"
             page.update()
             return
         try:
             edades, puertos, tarifas = sql_db.consultar()
             b64, resumen, cols = estadisticos.dibujar(elegidos, edades, puertos, tarifas)
             imagen.src_base64 = b64
-            imagen.width = 480 if cols == 1 else 900
+            imagen.widht = 480 if cols == 1 else 900
             imagen.visible = True
             mensaje.value = resumen
         except Exception as ex:
@@ -78,56 +81,29 @@ def main(page: ft.Page):
             mensaje.value = f"Error: {ex}"
         page.update()
 
-    casillas = [ft.Checkbox(label=nombre, on_change=redibujar) for nombre, _ in estadisticos.ESTADISTICOS]
+    def icono(marcado):
+        return ft.Icon(ft.Icons.CHECK_BOX if marcado else ft.Icons.CHECK_BOX_OUTLINE_BLANK)
+
+    def alternar(i):
+        def handler(e):
+            marcados[i] = not marcados[i]
+            items_est[i].leading = icono(marcados[i])
+            redibujar()
+        return handler
+
+    for i, (nombre, _) in enumerate(estadisticos.ESTADISTICOS):
+        items_est.append(ft.MenuItemButton(content=ft.Text(nombre), leading=icono(marcados[i]), on_click=alternar(i)))
 
     def desmarcar_todo(e):
-        for cb in casillas:
-            cb.value = False
+        for i in range(len(marcados)):
+            marcados[i] = True
+            items_est[i].leading = icono(True)
         redibujar()
 
-    def boton(texto, on_click):
-        return ft.ElevatedButton(texto, on_click=on_click, width=260)
-
-    menu_bd = ft.Column([
-        ft.Text("Base de datos", size=18, weight=ft.FontWeight.BOLD),
-        ruta_csv,
-        boton("Cargar CSV", accion_bd("Cargar CSV", lambda: accion_cargar_csv(ruta_csv.value))),
-        boton("Transferir a Mongo", accion_bd("Transferir a Mongo", accion_transferir_mongo)),
-        boton("Crear base de datos MySQL", accion_bd("Crear base de datos MySQL", sql_db.crear_bd)),
-        boton("Crear tabla MySQL", accion_bd("Crear tabla MySQL", sql_db.crear_tabla)),
-        boton("Insertar datos", accion_bd("Insertar datos", accion_insertar)),
-    ], spacing=8)
-
-    menu_est = ft.Column([
-        ft.Text("Estadisticos", size=18, weight=ft.FontWeight.BOLD),
-        *casillas,
-        ft.TextButton("Desmarcar todo", on_click=desmarcar_todo),
-    ], spacing=2)
-
-    menu_sobre = ft.Column([
-        ft.Text("Sobre", size=18, weight=ft.FontWeight.BOLD),
-        ft.Text("Sistema de control de pasajeros 'Titanic'"),
-        ft.Text("Jorge Ortiz"),
-        ft.Text("Omar Martinez"),
-        ft.text("Ramon Castillo"),
-    ], spacing=2)
-
-
-    panel_izq = ft.Column([menu_bd, ft.Divider(height=25), menu_est], width=290, scroll=ft.ScrollMode.AUTO)
-    panel_der = ft.Column([titulo, mensaje, imagen], expand=True, scroll=ft.ScrollMode.AUTO, spacing=12)
-
-    page.add(ft.Row([panel_izq, ft.VerticalDivider(width=1), panel_der], expand=True))
-
-
-if __name__ == "__main__":
-    ft.app(target=main)
-
-
-
-
-
-
-
-
-
-
+    #Sobre
+    def mostrar_sobre(e):
+        titulo.value = "Sobre"
+        imagen.visible = False
+        mensaje.value = ("Sistema de control de pasajeros 'Titanic'\n\n"
+                         "Jorge Ortiz\nOmar Martinez\nRamon Castillo")
+        page.update()
