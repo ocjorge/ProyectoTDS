@@ -22,7 +22,7 @@ def crear_bd():
     con.close()
     return f"Base de datos '{MYSQL_DB}' lista."
 
-def crear_table():
+def crear_tabla():
     """Crea la tabla"""
     con = _conectar()
     con.cursos().execute(f"""

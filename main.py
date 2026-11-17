@@ -11,15 +11,17 @@ CSV_POR_DEFECTO = "titanic.csv"
 
 ESTADO = {"datos": []}  # datos cargados del CSV, compartidos entre botones
 
+ruta_csv = ft.TextField(label="Ruta del CSV", value=CSV_POR_DEFECTO, width=260)
+
 
 #--- aciones del menu Base datos
 def accion_cargar_csv(ruta):
-    validas, descartas, total = validacion.cargar_csv(ruta)
+    validas, descartadas, total = validacion.cargar_csv(ruta)
     ESTADO["datos"] = validas
     return(f"CSV cargado: {os.path.abspath(ruta)}\n"
            f"Filas totales: {total}\n"
            f"filas válidas: {len(validas)}\n"
-           f"filas descartadas: {len(descartas)}")
+           f"filas descartadas: {descartadas}")
 
 
 def accion_transferir_mongo():
@@ -33,15 +35,15 @@ def main(page: ft.Page):
     page.title = "Sistema de control pasajeros 'Tintanic'"
     page.window.resizable = True
     page.window.maximizable = True
-    page.window_width = 1300
-    page.window_height = 760
+    page.window.width = 1300
+    page.window.height = 760
     page.padding = 15
-    page.Theme = ft.Theme(color_scheme_seed=ft.colors.BLUE_400, use_material3=True)
+    page.Theme = ft.Theme(color_scheme_seed=ft.Colors.BLUE_400, use_material3=True)
 
 
-    titulo = ft.Text("Selecciona una opción del menú", size = 22, weight = ft.font_weight.BOLD, color = ft.colors.BLUE_900)
+    titulo = ft.Text("Selecciona una opción del menú", size = 22, weight = ft.FontWeight.BOLD, color = ft.Colors.BLUE_900)
     mensaje = ft.Text("", size = 14, selectable = True)
-    imagen = ft.Image(visible = false, fit = ft.ImageFit.CONTAIN)
+    imagen = ft.Image(visible = False, fit = ft.ImageFit.CONTAIN)
 
     #--- botones del menu Base datos
     def accion_bd(nombre, funcion):
@@ -55,14 +57,14 @@ def main(page: ft.Page):
             except Exception as ex:
                 mensaje.value = f"Error: {ex}"
             page.update()
-        return handler()
+        return handler
 
     #.. Estadisticos.
     marcados = [False] * len(estadisticos.ESTADISTICOS)
     items_est = []
 
     def redibujar():
-        elegidos = [(n, f) for (n, f), m in zip(estadisticos.ESTADISTICOS.items(), marcados) if m]
+        elegidos = [(n, f) for (n, f), m in zip(estadisticos.ESTADISTICOS, marcados) if m]
         titulo.value = "Estadisticos"
         if not elegidos:
             imagen.visible = False
@@ -73,7 +75,7 @@ def main(page: ft.Page):
             edades, puertos, tarifas = sql_db.consultar()
             b64, resumen, cols = estadisticos.dibujar(elegidos, edades, puertos, tarifas)
             imagen.src_base64 = b64
-            imagen.widht = 480 if cols == 1 else 900
+            imagen.width = 480 if cols == 1 else 900
             imagen.visible = True
             mensaje.value = resumen
         except Exception as ex:
@@ -96,8 +98,8 @@ def main(page: ft.Page):
 
     def desmarcar_todo(e):
         for i in range(len(marcados)):
-            marcados[i] = True
-            items_est[i].leading = icono(True)
+            marcados[i] = FileExistsError
+            items_est[i].leading = icono(False)
         redibujar()
 
     #Sobre
