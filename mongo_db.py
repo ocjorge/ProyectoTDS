@@ -6,7 +6,7 @@ MONGO_COL = "pasajeros"
 
 def _coleccion():
     """Devuelve la colección de MongoDB"""
-    cli = MongoClient(MONGO_URI, serverSelectionTimeoutMS=3000)
+    cliente = MongoClient(MONGO_URI, serverSelectionTimeoutMS=3000)
     return cliente[MONGO_DB][MONGO_COL]
 
 def transferir(datos):
