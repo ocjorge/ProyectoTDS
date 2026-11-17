@@ -44,6 +44,15 @@ def est_prom_tarifa(ax, e, p, t):
     ax.legend()
     return f"promedio {t.mean():.2f}, mediana {np.median(t):.2f}, desv. {t.std():.2f}"
 
+def est_viajeros_puerto(ax, e, p, t):
+    claves, cuentas = np.unique(p, return_counts=True)
+    nombres = [PUERTOS.get(c, c) for c in claves]
+    b = ax.bar(nombres, cuentas, color="#54A24B")
+    ax.bar_label(b)
+    ax.set_title("Viajeros vs puerto de embarque\n(sustituye pais)")
+    ax.set_ylabel("Viajeros")
+    return f"{cuentas.sum()} viajeros en {len(nombres)} puertos"
+
 def est_rango_edad_tarifa(ax, e, p, t):
     cortes = [13, 18, 30, 45, 60]
     etiquetas = ["0-12", "13-17", "18-29", "30-44", "45-59", "60+"]
